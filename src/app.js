@@ -1,35 +1,31 @@
 const http = require('http');
-const url = require('url');
 const fs = require('fs');
 const path = require('path');
-const getUsers = require('./modules/users');
+
+const getUsers = () => {
+  const filePath = path.join(__dirname, './data/users.json');
+  return fs.readFileSync(filePath, 'utf8');
+}
 
 const server = http.createServer((request, response) => {
-  const parsedUrl = url.parse(request.url, true);
-  const queryParams = parsedUrl.query;
+  const url = new URL(`http://localhost${request.url}`);
+  const searchParams = url.searchParams;
 
-  if (queryParams.hello) {
-    if (queryParams.hello === '') {
-      response.writeHead(400, {'Content-Type': 'text/plain'});
+  if (searchParams.has('hello')) {
+    const name = searchParams.get('hello');
+    if (!name) {
+      response.writeHead(400, { 'Content-Type': 'text/plain' });
       response.end('Enter a name');
     } else {
-      response.writeHead(200, {'Content-Type': 'text/plain'});
-      response.end(`Hello, ${queryParams.hello}!`);
+      response.writeHead(200, { 'Content-Type': 'text/plain' });
+      response.end(`Hello, ${name}!`);
     }
-  } else if (queryParams.users) {
-    if (queryParams.users === '') {
-      response.writeHead(200, {'Content-Type': 'application/json'});
-      response.end(getUsers());
-    } else {
-      response.writeHead(500, {'Content-Type': 'text/plain'});
-      response.end();
-    }
-  } else if (request.url === '/') {
-    response.writeHead(200, {'Content-Type': 'text/plain'});
-    response.end('Hello, World!');
+  } else if (searchParams.has('users')) {
+    response.writeHead(200, { 'Content-Type': 'application/json' });
+    response.end(getUsers());
   } else {
-    response.writeHead(500, {'Content-Type': 'text/plain'});
-    response.end();
+    response.writeHead(200, { 'Content-Type': 'text/plain' });
+    response.end('Hello, World!');
   }
 });
 

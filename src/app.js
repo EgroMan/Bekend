@@ -1,11 +1,5 @@
 const http = require('http');
-const fs = require('fs');
-const path = require('path');
-
-const getUsers = () => {
-  const filePath = path.join(__dirname, './data/users.json');
-  return fs.readFileSync(filePath, 'utf8');
-}
+const getUsers = require('./modules/users.js')
 
 const server = http.createServer((request, response) => {
   const url = new URL(`http://localhost${request.url}`);
@@ -29,6 +23,6 @@ const server = http.createServer((request, response) => {
   }
 });
 
-server.listen(3000, () => {
-  console.log('Сервер запущен по адресу http://127.0.0.1:3000/');
+server.listen(3003, () => {
+  console.log('Сервер запущен по адресу http://127.0.0.1:3003/');
 });

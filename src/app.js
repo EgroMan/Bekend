@@ -1,37 +1,52 @@
-const http = require('http');
-const getUsers = require('./modules/users.js')
+const express = require('express');
+const dotenv = require('dotenv');
+const bodyParser = require('body-parser')
+const cors = require('cors')
+const mongoose = require('mongoose')
+const userRouter = require('./routes/users');
+const loggerOne= require('./middlewares/logerOna')
+const loggerTwo=require('./middlewares/logerTwo')
 
-const server = http.createServer((request, response) => {
-  const url = new URL(`http://localhost${request.url}`);
-  const searchParams = url.searchParams;
+dotenv.config()
 
-  for (const key of searchParams.keys()) {
-    // Here you can add the logic to check if the parameter is not equal to any of the existing ones
-    if (key !== 'hello' && key !== 'users') {
-      response.writeHead(404, { 'Content-Type': 'text/plain' });
-      response.end(`Parameter ${key} is not supported`);
-      return;
-    }
-  }
+const {
+  PORT = 3005, 
+  API_URL =  "http://127.0.0.1",
+  MONGO_URL ="mongodb://127.0.0.1:27017/test"
+} = process.env
 
-  if (searchParams.has('hello')) {
-    const name = searchParams.get('hello');
-    if (!name) {
-      response.writeHead(400, { 'Content-Type': 'text/plain' });
-      response.end('Enter a name');
-    } else {
-      response.writeHead(200, { 'Content-Type': 'text/plain' });
-      response.end(`Hello, ${name}!`);
-    }
-  } else if (searchParams.has('users')) {
-    response.writeHead(200, { 'Content-Type': 'application/json' });
-    response.end(getUsers());
-  } else {
-    response.writeHead(200, { 'Content-Type': 'text/plain' });
-    response.end('Hello, World!');
-  }
-});
 
-server.listen(3003, () => {
-  console.log('Server is running at http://127.0.0.1:3003/');
-});
+mongoose.connect(MONGO_URL, err => {
+  if (err) throw err;
+  console.log('connected')
+})
+
+
+const  app = express();
+
+
+
+const helloWorld = (request, response) =>{
+  response.status(200);
+  response.send('hello');
+}
+
+app.use(cors())
+app.use(bodyParser.json())
+app.use(loggerOne)
+app.use(loggerTwo)
+app.get('/', helloWorld)
+
+//Обработка запросов
+app.post ('/', (request, response)=>{
+  response.status(200);
+  response.send('Создание нового пользователя');
+})
+
+
+app.use(userRouter);
+
+app.listen(PORT, () =>{
+  console.log ('Сервер запущен по адресу http://127.0.0.1:3005');
+})
+

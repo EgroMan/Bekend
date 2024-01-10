@@ -1,48 +1,44 @@
 const express = require('express');
 const dotenv = require('dotenv');
-const bodyParser = require('body-parser')
-const cors = require('cors')
-const mongoose = require('mongoose')
+const bodyParser = require('body-parser');
+const cors = require('cors');
+const mongoose = require('mongoose');
 const userRouter = require('./routes/users');
-const loggerOne= require('./middlewares/logerOna')
-const loggerTwo=require('./middlewares/logerTwo')
+const bookRouter = require('./routes/books');
+const logger = require('./middlewares/logger')
 
-dotenv.config()
-
+dotenv.config();
 const {
-  PORT = 3005, 
-  API_URL =  "http://127.0.0.1",
-  MONGO_URL ="mongodb://127.0.0.1:27017/backend"
-} = process.env
+    PORT  = 3005 ,
+    API_URL = "http://127.0.0.1",
+    MONGO_URL = "mongodb://127.0.0.1:27017/test"
+} = process.env;
+
+mongoose.connect(MONGO_URL).then (() => 
+console.log("Connected to Mongo!")).catch((error) => console.log("[MONGO_CONNECTION]", error));
+
+const app = express();
 
 
-
-
-const  app = express();
-
-
-
-const helloWorld = (request, response) =>{
-  response.status(200);
-  response.send('hello');
+const helloWorld = (request, response) => {
+    response.status(200);
+    response.send("Hello, World!");
 }
+app.use(cors());
+app.use(logger);
+app.use(bodyParser.json());
 
-app.use(cors())
-app.use(bodyParser.json())
-app.use(loggerOne)
-app.use(loggerTwo)
-app.get('/', helloWorld)
+app.get('/', helloWorld);
 
-//Обработка запросов
-app.post ('/', (request, response)=>{
-  response.status(200);
-  response.send('Создание нового пользователя');
-})
+app.post('/', (request, response) => {
+    response.status(200);
+    response.send("Hello from POST");
+});
+
 
 
 app.use(userRouter);
-
-app.listen(PORT, () =>{
-  console.log ('Сервер запущен по адресу http://127.0.0.1:3005');
-})
-
+app.use(bookRouter);
+app.listen(PORT, () => {
+    console.log(`Сервер запущен по адресу ${API_URL}:${PORT}`);
+});

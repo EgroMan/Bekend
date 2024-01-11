@@ -2,7 +2,6 @@ const Book = require('../models/books')
 
 // Получим всех книг из БД
 const getBooks =  (request, response) => {
-    //get all books
     Book.find({})
         .then(book => {
             response.status(200).send(book);
@@ -21,14 +20,6 @@ const getBook = (request, response) => {
         else response.status(200).send(book)
        }
 
-    ).catch(e =>  response.status(500).send(e.message))
-}
-
-//create boos
-const createBook = (request, response) => {
-    return Book.create({...request.body}).then(
-        (book) => {response.status(201).send(book)}
-        
     ).catch(e =>  response.status(500).send(e.message))
 }
 
@@ -57,7 +48,6 @@ const deleteBook = (request, response) => {
 module.exports = {
     getBooks,
     getBook,
-    createBook,
     updateBook,
     deleteBook
 }

@@ -1,14 +1,13 @@
 const User = require('../models/user');
 
 // Получим всех пользователей из БД
-const getUsers = (request, response) => {
-  User.find({})
-    .then(user => {
-      response.status(200).send(user);
-    })
-    .catch(e => {
-      response.status(500).send(e.message);
-    });
+const getUsers = async (request, response) => {
+  try {
+    const users = await User.find({});
+    response.status(200).send(users);
+  } catch (e) {
+    response.status(500).send(e.message);
+  }
 }
 
 // Получим пользователя по ID
@@ -20,20 +19,6 @@ const getUser = (request, response) => {
       else response.status(200).send(user)
     }
   )
-    .catch(e => {
-      response.status(500).send(e.message);
-    });
-}
-
-// Создаем пользователя
-const createUser = (request, response) => {
-  const data = request.body;
-  User.create(data)
-    .then(
-      user => {
-        response.status(201).send(user);
-      }
-    )
     .catch(e => {
       response.status(500).send(e.message);
     });
@@ -74,7 +59,6 @@ const deleteUser = (request, response) => {
 module.exports = {
   getUsers,
   getUser,
-  createUser,
   updateUser,
   deleteUser
 };

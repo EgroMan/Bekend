@@ -14,8 +14,7 @@ const {
     MONGO_URL = "mongodb://127.0.0.1:27017/test"
 } = process.env;
 
-mongoose.connect(MONGO_URL).then (() => 
-console.log("Connected to Mongo!")).catch((error) => console.log("[MONGO_CONNECTION]", error));
+mongoose.connect(MONGO_URL).then (() => console.log("Connected to Mongo!")).catch((error) => console.log("[MONGO_CONNECTION]", error));
 
 const app = express();
 
